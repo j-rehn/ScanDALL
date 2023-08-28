@@ -82,4 +82,21 @@ where gtf is the full path to the relevant GTF file, the transcriptID.txt is the
 Rscript --vanilla Rscripts/create_exon_bed.R -r path/to/hg19.refGene.gtf.gz -i path/to/hg19.refSeq.ID.keyGenes.txt -o hg19.myGenes.exon.bed
 ```
 
-2. The second step is creation of a text file containing information about annotated splice-juctions. This is required so that known exon skipping events occuring due to alternate transcript usage are not incorrectly identified as potential deletion events. This can be run by simply providing the GTF file and specifying the output file. However, you may wish to exclude some transcripts from your annotated.SJ.txt file. For example, the hg19 reference genome contains...
+2. The second step is creation of a text file containing information about annotated splice-juctions. This is required so that known exon skipping events occuring due to alternate transcript usage are not incorrectly identified as potential deletion events. This can be run by simply providing the GTF file and specifying the output file. However, you may wish to exclude some transcripts from your annotated.SJ.txt file. For example, the hg19 reference genome contains 3 IKZF1 associated transcripts which mimic the common exon 4-7 gene deletion. Excluding these transcripts ensure that true 4-7 deletion events are not inadvertantly excluded from the deletion prediction.
+
+To do this users provide a text file containing transcript identifiers for the transcripts they wish to exclude from the annotated.SJ.txt file. E.g. For IKZF1:
+```
+cat hg19.refSeq.ID.exclude.txt
+NM_001291840
+NM_001291844
+NM_001291843
+```
+This file is then referenced when running the associated R script create_knownSJ_file_v0.2.R executed as follows:
+```
+Rscript --vanilla create_intron_bed.R -r gtf -e exclude.transcriptID.txt -o output.txt
+```
+where  gtf is the full path to the relevant GTF file, the exclude.transcriptID.txt is the text file containing transcripts to ignore, and the output.txt file is the name and location for outputting the annotated.SJ.txt file. E.g.
+```
+Rscript --vanilla Rscripts/create_intron_bed.R -r path/to/hg19.refGene.gtf.gz -e path/to/hg19.refSeq.ID.exclude.txt -o known.SJ.hg19.txt
+```
+
