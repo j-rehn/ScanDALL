@@ -59,4 +59,27 @@ Multiple temporary files will be generated at the location where the script is r
 ```  
 
 ## Application of ScanDALL to alternate genes or reference genomes
+Users can generate their own canonical.exon.bed and annotated.SJ.txt files using the supplied R scripts. These scripts requires access to the GTF file for the reference genome used when aligning data with STAR.  
 
+1. We will first describe the creation of the exon bed file for genes of interest. Users need to begin by creating a text file containing the transcript identifier(s) for the specific transcripts they wish to use when specifying the exon locations. For example, the following text file contains transcript identifiers for genes analysed in the manuscript (IKZF1, PAX5, ETV6, RB1, ERG, STIL, LEF1, PTEN):
+```
+cat hg19.refSeq.ID.keyGenes.txt
+NM_006060
+NM_016734
+NM_001987
+NM_000321
+NM_001136154
+NM_001048166
+NM_016269
+NM_000314
+```
+The script create_exon_bed.R will take this text file input and use the information to generate a bed file containing exon locations for these transcripts. The script is executed as follows:
+```
+Rscript --vanilla Rscripts/create_exon_bed.R -r gtf -i transcriptID.txt -o output.bed
+```
+where gtf is the full path to the relevant GTF file, the transcriptID.txt is the text file containing transcript identifiers, and the output.bed file is the name and location for outputting the exon.bed file. E.g.
+```
+Rscript --vanilla Rscripts/create_exon_bed.R -r path/to/hg19.refGene.gtf.gz -i path/to/hg19.refSeq.ID.keyGenes.txt -o hg19.myGenes.exon.bed
+```
+
+2. The second step is creation of a text file containing information about annotated splice-juctions. This is required so that known exon skipping events occuring due to alternate transcript usage are not incorrectly identified as potential deletion events. This can be run by simply providing the GTF file and specifying the output file. However, you may wish to exclude some transcripts from your annotated.SJ.txt file. For example, the hg19 reference genome contains...
